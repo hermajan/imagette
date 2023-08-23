@@ -1,0 +1,12 @@
+parameters:
+	level: 4
+	scanDirectories:
+		- %currentWorkingDirectory%/src/
+
+	checkMissingIterableValueType: false
+	checkGenericClassInNonGenericObjectType: false
+
+includes:
+	- %currentWorkingDirectory%/phpstan-baseline.neon
+	- %currentWorkingDirectory%/vendor/phpstan/phpstan-nette/extension.neon
+	- %currentWorkingDirectory%/vendor/phpstan/phpstan-nette/rules.neon

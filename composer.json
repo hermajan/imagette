@@ -1,0 +1,37 @@
+{
+	"name": "hermajan/imagette",
+	"description": "Handling of images with Nette Image.",
+	"type": "library",
+	"homepage": "https://hermajan.net/imagette",
+	"support": {
+		"issues": "https://github.com/hermajan/imagette/issues"
+	},
+	"license": "MIT",
+	"autoload": {
+		"psr-4": {
+			"Imagette\\": "src"
+		}
+	},
+	"config": {
+		"sort-packages": true,
+		"optimize-autoloader": true
+	},
+	"scripts": {
+		"phpstan": [
+			"vendor/bin/phpstan analyse src -c tests/phpstan.neon"
+		],
+		"tester": [
+			"php ./vendor/nette/tester/src/tester.php -C -s tests"
+		]
+	},
+	"require": {
+		"php": ">=7.3",
+		"nette/utils": "3.*"
+	},
+	"require-dev": {
+		"nette/tester": "^2.0",
+		"phpstan/phpstan": "^1.7",
+		"phpstan/phpstan-nette": "^1.0",
+		"tracy/tracy": "^2.5"
+	}
+}
