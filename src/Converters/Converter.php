@@ -1,49 +1,71 @@
 <?php
+
 namespace Imagette\Converters;
 
-use Nette\Utils\{Finder, Image};
+use Imagette\Picture;
+use Nette\Utils\{Finder, Image, ImageException, UnknownImageFileException};
 
 abstract class Converter {
-	abstract public function convert(string $path, bool $replace = false);
+	protected string $extension;
 	
-	public function convertFolder(string $path, bool $replace = false, array $masks = ["*"]) {
-		$finder = Finder::findFiles($masks)->from($path);
-		/** @var \SplFileInfo $file */
-		foreach($finder as $key => $file) {
-			if($file->getExtension() != "webp") {
-//				echo $key.PHP_EOL;
-				$this->convert($key, $replace);
-			}
-		}
-	}
+	protected int $quality = -1;
 	
-	public function save(Image $image, string $file, string $suffix = "", bool $replace = false) {
-		$path = pathinfo($file, PATHINFO_DIRNAME)."/".pathinfo($file, PATHINFO_FILENAME);
-		$filename = $path.$suffix.".".pathinfo($file, PATHINFO_EXTENSION);
+	protected int $type;
+	
+	/**
+	 * Converts image to some format.
+	 * @param string $path
+	 * @param bool $replace
+	 * @return bool True if image is converted, false otherwise.
+	 * @throws ImageException
+	 */
+	public function convert(string $path, bool $replace = false): bool {
+		$filename = $path.".".$this->extension;
+		$extension = pathinfo($path, PATHINFO_EXTENSION);
 		
-		if($replace === true) {
-			$image->save($filename);
-		} else {
-			if(!file_exists($filename)) {
-				$image->save($filename);
-			}
-		}
-		
-		return $image;
-	}
-	
-	public static function isValid(string $filename): bool {
-		$exists = file_exists($filename) and is_file($filename);
-		if($exists === true) {
+		if($extension !== $this->extension) {
 			try {
-				Image::fromFile($filename);
-			} catch(\Exception $e) {
+				$image = Image::fromFile($path);
+			} catch(UnknownImageFileException $e) {
 				return false;
+			}
+			
+			if($replace === true) {
+				$this->save($image, $filename);
+			} else {
+				if(!file_exists($filename)) {
+					$this->save($image, $filename);
+				} else {
+					return false;
+				}
 			}
 		} else {
 			return false;
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * Converts folder with images to some format.
+	 * @param string $path Path to file.
+	 * @param bool $replace True if converted file should be replaced, false otherwise.
+	 * @param array $masks Masks where search for files. See <https://doc.nette.org/en/utils/finder#toc-wildcards>.
+	 * @throws ImageException
+	 */
+	public function convertFolder(string $path, bool $replace = false, array $masks = ["*"]): void {
+		$finder = Finder::findFiles($masks)->from($path);
+		/** @var \SplFileInfo $file */
+		foreach($finder as $key => $file) {
+			$this->convert($key, $replace);
+		}
+	}
+	
+	/**
+	 * @throws ImageException
+	 */
+	protected function save(Image $image, string $filename) {
+		$image->paletteToTrueColor();
+		$image->save($filename, $this->quality, $this->type);
 	}
 }

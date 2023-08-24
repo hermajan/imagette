@@ -1,39 +1,22 @@
 <?php
+
 namespace Imagette\Converters;
 
-use Nette\Utils\{Image};
+use Nette\NotSupportedException;
+use Nette\Utils\Image;
 
+/**
+ * Converts images to AVIF format.
+ * @see https://en.wikipedia.org/wiki/AVIF
+ */
 class AvifConverter extends Converter {
-	const EXTENSION = "avif";
-	
-	public function convert(string $path, bool $replace = false, bool $echo = false) {
-		$filename = pathinfo($path, PATHINFO_DIRNAME)."/".pathinfo($path, PATHINFO_FILENAME);
-		
-		if($this::isValid($path)) {
-			$image = Image::fromFile($path);
-			if($replace === true) {
-				$image->save($filename.".".self::EXTENSION, 30, Image::AVIF);
-				
-				if($echo === true) {
-					echo $path." -> avif".PHP_EOL;
-				}
-			} else {
-				if(!file_exists($filename.".".self::EXTENSION)) {
-					$image->save($filename.".".self::EXTENSION, 30, Image::AVIF);
-					
-					if($echo === true) {
-						echo $path." -> avif".PHP_EOL;
-					}
-				} else {
-					if($echo === true) {
-						echo "File ".$path." not converted!".PHP_EOL;
-					}
-				}
-			}
-		} else {
-			if($echo === true) {
-				echo "File ".$path." is not valid!".PHP_EOL;
-			}
+	public function __construct() {
+		if(PHP_VERSION_ID < 80100) {
+			throw new NotSupportedException("AVIF can be used from PHP 8.1!");
 		}
+		
+		$this->extension = "avif";
+		$this->quality = -1;
+		$this->type = Image::AVIF;
 	}
 }
