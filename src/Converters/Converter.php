@@ -2,7 +2,6 @@
 
 namespace Imagette\Converters;
 
-use Imagette\Picture;
 use Nette\Utils\{Finder, Image, ImageException, UnknownImageFileException};
 
 abstract class Converter {

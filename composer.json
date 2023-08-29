@@ -26,6 +26,7 @@
 	},
 	"require": {
 		"php": ">=7.3",
+		"nette/finder": "2.*",
 		"nette/utils": "3.*"
 	},
 	"require-dev": {
