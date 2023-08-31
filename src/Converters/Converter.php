@@ -5,7 +5,7 @@ namespace Imagette\Converters;
 use Nette\Utils\{Finder, Image, ImageException, UnknownImageFileException};
 
 abstract class Converter {
-	protected string $extension;
+	protected string $extension = "";
 	
 	protected int $quality = -1;
 	
@@ -19,9 +19,7 @@ abstract class Converter {
 	 * @throws ImageException
 	 */
 	public function convert(string $path, bool $replace = false): bool {
-		$filename = $path.".".$this->extension;
 		$extension = pathinfo($path, PATHINFO_EXTENSION);
-		
 		if($extension !== $this->extension) {
 			try {
 				$image = Image::fromFile($path);
@@ -30,10 +28,10 @@ abstract class Converter {
 			}
 			
 			if($replace === true) {
-				$this->save($image, $filename);
+				$this->save($image, $path);
 			} else {
-				if(!file_exists($filename)) {
-					$this->save($image, $filename);
+				if(!file_exists($path.".".$this->extension)) {
+					$this->save($image, $path);
 				} else {
 					return false;
 				}
@@ -63,8 +61,8 @@ abstract class Converter {
 	/**
 	 * @throws ImageException
 	 */
-	protected function save(Image $image, string $filename) {
+	public function save(Image $image, string $filename) {
 		$image->paletteToTrueColor();
-		$image->save($filename, $this->quality, $this->type);
+		$image->save($filename.".".$this->extension, $this->quality, $this->type);
 	}
 }

@@ -17,6 +17,8 @@ class ImagetteExtension extends CompilerExtension {
 				"folder" => Expect::string()->required(),
 				"fallback" => Expect::string(),
 				"flags" => Expect::arrayOf(Expect::anyOf(Expect::string(), Expect::int()))->default([Image::SHRINK_ONLY]),
+				"formats" => Expect::array(),
+				
 				"templates" => Expect::arrayOf(Expect::structure([
 					"path" => Expect::string()->required(),
 					"width" => Expect::int()->nullable(),

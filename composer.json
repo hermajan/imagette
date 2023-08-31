@@ -26,8 +26,10 @@
 	},
 	"require": {
 		"php": ">=7.3",
+		"nette/di": "^3.1",
 		"nette/finder": "2.*",
-		"nette/utils": "3.*"
+		"nette/utils": "3.*",
+		"rosell-dk/webp-convert": "^2.9"
 	},
 	"require-dev": {
 		"nette/tester": "^2.0",
