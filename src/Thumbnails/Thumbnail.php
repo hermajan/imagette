@@ -7,6 +7,7 @@ use Imagette\Picture;
 use Nette\DirectoryNotFoundException;
 use Nette\StaticClass;
 use Nette\Utils\{Finder, Image, ImageException, UnknownImageFileException};
+use Tracy\Debugger;
 
 class Thumbnail {
 	use StaticClass;
@@ -30,17 +31,14 @@ class Thumbnail {
 		}
 	}
 	
-	public static function isValid(string $path, string $file): bool {
-		$filename = self::$parameters["base"].$path.$file;
-		return Picture::isValid($filename);
-	}
-	
 	/**
 	 * Cleans thumbnails
+	 * @return array Array of removed thumbnails filenames
 	 */
 	public static function clean(): array {
 		$result = [];
 		$files = Finder::findFiles("*")->in(self::$parameters["folder"]);
+		/** @var \SplFileInfo $file */
 		foreach($files as $file) {
 			if(unlink($file->getPathname())) {
 				$result[] = $file->getPathname();
@@ -49,17 +47,39 @@ class Thumbnail {
 		return $result;
 	}
 	
+	public static function generate() {
+		$templates = self::$parameters["templates"];
+		foreach($templates as $key => $template) {
+			if(array_key_exists("path", $template)) {
+				$path = self::$parameters["base"].$template["path"];
+				$i = 0;
+				$files = Finder::findFiles("*")->in($path);
+				/** @var \SplFileInfo $file */
+				foreach($files as $file) {
+					$r = self::create($key, $file->getFilename(), $template["width"] ?? null, $template["height"] ?? null, $template["flags"] ?? [], $template["quality"] ?? null, self::$parameters["formats"] ?? []);
+					Debugger::dump($r);
+					
+					if($i > 5) {
+						break;
+					}
+					$i++;
+				}
+			}
+			break;
+		}
+	}
+	
 	/**
-	 * Returns the path and filename of image
+	 * Returns the path and filename of thumbnail of image
 	 */
-	public static function getSource(string $path, string $filename, ?int $width = null, ?int $height = null, array $flags = [], ?int $quality = null, array $formats = []): string {
+	public static function create(string $path, string $filename, ?int $width = null, ?int $height = null, array $flags = [], ?int $quality = null, array $formats = []): string {
 		if(!file_exists(self::$parameters["folder"]) and !mkdir(self::$parameters["folder"], 0755)) {
 			throw new DirectoryNotFoundException("Path `".self::$parameters["folder"]."` does not exist!");
 		}
 		
-		if(array_key_exists($path, self::$parameters["templates"])) {
-			$template = $path;
-			$path = self::$parameters["templates"][$template]["path"];
+		$template = $path;
+		if(array_key_exists($template, self::$parameters["templates"])) {
+			$path = self::$parameters["base"].self::$parameters["templates"][$template]["path"];
 			$width = self::$parameters["templates"][$template]["width"] ?? null;
 			$height = self::$parameters["templates"][$template]["height"] ?? null;
 			$flags = self::$parameters["templates"][$template]["flags"] ?? [];
@@ -69,28 +89,6 @@ class Thumbnail {
 		if(empty($flags)) {
 			$flags = self::$parameters["flags"];
 		}
-		
-		if(empty($formats)) {
-			$formats = self::$parameters["formats"];
-		}
-		
-		$destination = self::resize($path, $filename, $width, $height, $flags, $quality, $formats);
-		return substr($destination, strlen(realpath(self::$parameters["base"])));
-	}
-	
-	/**
-	 * Resizes image
-	 */
-	private static function resize(string $path, string $file, ?int $width = null, ?int $height = null, array $flags = [], ?int $quality = null, array $formats = []): string {
-		if(!self::isValid($path, $file)) {
-			return self::$parameters["fallback"];
-		}
-		
-		$filename = self::$parameters["base"].$path.$file;
-		if(file_exists($filename) and !isset($width) and !isset($height)) {
-			return $filename;
-		}
-		
 		$resizeFlags = 0;
 		foreach($flags as $flag) {
 			if(is_string($flag)) {
@@ -100,28 +98,56 @@ class Thumbnail {
 			}
 		}
 		
-		$folder = str_replace(DIRECTORY_SEPARATOR, "-", $path);
-		$mask = $width."x".$height."f".$resizeFlags."q".$quality;
-		$destination = self::$parameters["folder"].pathinfo($filename, PATHINFO_FILENAME)."_".$folder.$mask.filemtime($filename).".".pathinfo($filename, PATHINFO_EXTENSION);
+		$source = $path.$filename;
+		$resized = self::resize($source, $template, $width, $height, $resizeFlags, $quality);
 		
-		if(!file_exists($destination) and file_exists($filename)) {
+		if(empty($formats)) {
+			$formats = self::$parameters["formats"];
+		}
+		self::convert($resized, $formats);
+		
+		return substr($resized, strlen(realpath(self::$parameters["base"])));
+	}
+	
+	/**
+	 * Resizes image into thumbnail
+	 */
+	protected static function resize(string $filename, string $template = "", ?int $width = null, ?int $height = null, int $flags = Image::FIT, ?int $quality = null): string {
+		if(file_exists($filename) and !isset($width) and !isset($height)) {
+			return $filename;
+		}
+		
+		if(!Picture::isValid($filename)) {
+			return self::$parameters["fallback"];
+		}
+		
+		$temp = "_".str_replace(DIRECTORY_SEPARATOR, "-", $template)."_";
+		$mask = $width."x".$height."f".$flags."q".$quality;
+		$mtime = "mt".filemtime($filename);
+		$destination = self::$parameters["folder"].pathinfo($filename, PATHINFO_FILENAME).$temp.$mask.$mtime.".".pathinfo($filename, PATHINFO_EXTENSION);
+		
+		if(file_exists($filename) and !file_exists($destination)) {
 			try {
 				$image = Image::fromFile($filename);
 				if($width or $height) {
-					$image->resize($width, $height, $resizeFlags);
+					$image->resize($width, $height, $flags);
 				}
-				
 				$image->save($destination, $quality);
 			} catch(UnknownImageFileException|ImageException $e) {
 				return self::$parameters["fallback"];
 			}
 		}
 		
-		self::convert($destination, $formats);
 		return $destination;
 	}
 	
-	protected static function convert(string $path, array $formats = []) {
+	/**
+	 * Converts thumbnail to other formats
+	 * @param string $filename Absolute path of the file
+	 * @param array $formats Formats to which convert
+	 * @throws ImageException
+	 */
+	protected static function convert(string $filename, array $formats = []) {
 		foreach($formats as $format) {
 			if(is_string($format)) {
 				$type = constant($format);
@@ -130,13 +156,15 @@ class Thumbnail {
 			}
 			
 			switch($type) {
+				case "avif":
 				case Image::AVIF:
 					$avifConverter = new AvifConverter();
-					$avifConverter->convert($path);
+					$avifConverter->convert($filename);
 					break;
+				case "webp":
 				case Image::WEBP:
 					$webpConverter = new WebpConverter();
-					$webpConverter->convert($path);
+					$webpConverter->convert($filename);
 					break;
 			}
 		}

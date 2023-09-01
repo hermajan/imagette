@@ -2,30 +2,18 @@
 
 namespace Imagette\DI;
 
-use Imagette\Latte\ThumbnailMacro;
+use Imagette\Thumbnails\Parameters\{Template, Thumbnails};
 use Imagette\Thumbnails\Thumbnail;
+use Imagette\Thumbnails\ThumbnailMacro;
 use Nette\DI\CompilerExtension;
 use Nette\PhpGenerator\ClassType;
 use Nette\Schema\{Expect, Schema};
-use Nette\Utils\Image;
 
 class ImagetteExtension extends CompilerExtension {
 	public function getConfigSchema(): Schema {
 		return Expect::structure([
-			"thumbnails" => Expect::structure([
-				"base" => Expect::string(),
-				"folder" => Expect::string()->required(),
-				"fallback" => Expect::string(),
-				"flags" => Expect::arrayOf(Expect::anyOf(Expect::string(), Expect::int()))->default([Image::SHRINK_ONLY]),
-				"formats" => Expect::array(),
-				
-				"templates" => Expect::arrayOf(Expect::structure([
-					"path" => Expect::string()->required(),
-					"width" => Expect::int()->nullable(),
-					"height" => Expect::int()->nullable(),
-					"flags" => Expect::arrayOf(Expect::anyOf(Expect::string(), Expect::int()))->default([Image::SHRINK_ONLY]),
-					"quality" => Expect::int()->nullable()
-				])->castTo("array"))
+			"thumbnails" => Expect::from(new Thumbnails, [
+				"templates" => Expect::arrayOf(Expect::from(new Template)->castTo("array"))
 			])->castTo("array")
 		]);
 	}
