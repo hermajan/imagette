@@ -26,7 +26,7 @@
 	},
 	"require": {
 		"php": ">=7.4",
-		"latte/latte": "2.*",
+		"latte/latte": "^2.11",
 		"nette/di": "3.*",
 		"nette/finder": "2.*",
 		"nette/utils": "3.*",
