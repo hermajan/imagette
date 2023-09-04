@@ -37,7 +37,7 @@ class Thumbnail {
 	 */
 	public static function clean(): array {
 		$result = [];
-		$files = Finder::findFiles("*")->in(self::$parameters["folder"]);
+		$files = Finder::findFiles("*")->in(self::$parameters["folder"])->exclude(".gitkeep");
 		/** @var \SplFileInfo $file */
 		foreach($files as $file) {
 			if(unlink($file->getPathname())) {
@@ -56,16 +56,17 @@ class Thumbnail {
 				$files = Finder::findFiles("*")->in($path);
 				/** @var \SplFileInfo $file */
 				foreach($files as $file) {
+					Debugger::dump($file->getRealPath());
 					$r = self::create($key, $file->getFilename(), $template["width"] ?? null, $template["height"] ?? null, $template["flags"] ?? [], $template["quality"] ?? null, self::$parameters["formats"] ?? []);
-					Debugger::dump($r);
-					
-					if($i > 5) {
-						break;
-					}
-					$i++;
+//					Debugger::dump($r);
+//
+//					if($i > 5) {
+//						break;
+//					}
+//					$i++;
 				}
 			}
-			break;
+//			break;
 		}
 	}
 	
@@ -84,6 +85,8 @@ class Thumbnail {
 			$height = self::$parameters["templates"][$template]["height"] ?? null;
 			$flags = self::$parameters["templates"][$template]["flags"] ?? [];
 			$quality = self::$parameters["templates"][$template]["quality"] ?? null;
+		} else {
+			$path = self::$parameters["base"].$template;
 		}
 		
 		if(empty($flags)) {
@@ -118,13 +121,23 @@ class Thumbnail {
 		}
 		
 		if(!Picture::isValid($filename)) {
+			Debugger::barDump($filename);
 			return self::$parameters["fallback"];
 		}
 		
+		$folder = self::$parameters["folder"];
 		$temp = "_".str_replace(DIRECTORY_SEPARATOR, "-", $template)."_";
+		if(!str_contains($template, DIRECTORY_SEPARATOR)) {
+			$directory = self::$parameters["folder"].$template.DIRECTORY_SEPARATOR;
+			if(is_dir($directory) or mkdir($directory, 0755)) {
+				$folder = $directory;
+				$temp = "_";
+			}
+		}
+		
 		$mask = $width."x".$height."f".$flags."q".$quality;
 		$mtime = "mt".filemtime($filename);
-		$destination = self::$parameters["folder"].pathinfo($filename, PATHINFO_FILENAME).$temp.$mask.$mtime.".".pathinfo($filename, PATHINFO_EXTENSION);
+		$destination = $folder.pathinfo($filename, PATHINFO_FILENAME).$temp.$mask.$mtime.".".pathinfo($filename, PATHINFO_EXTENSION);
 		
 		if(file_exists($filename) and !file_exists($destination)) {
 			try {
@@ -145,7 +158,6 @@ class Thumbnail {
 	 * Converts thumbnail to other formats
 	 * @param string $filename Absolute path of the file
 	 * @param array $formats Formats to which convert
-	 * @throws ImageException
 	 */
 	protected static function convert(string $filename, array $formats = []) {
 		foreach($formats as $format) {
@@ -159,12 +171,12 @@ class Thumbnail {
 				case "avif":
 				case Image::AVIF:
 					$avifConverter = new AvifConverter();
-					$avifConverter->convert($filename);
+					$avifConverter->convert($filename, false);
 					break;
 				case "webp":
 				case Image::WEBP:
 					$webpConverter = new WebpConverter();
-					$webpConverter->convert($filename);
+					$webpConverter->convert($filename, false);
 					break;
 			}
 		}

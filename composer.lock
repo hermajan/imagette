@@ -4,40 +4,43 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cd610744c88fd10cae0547f06cab066a",
+    "content-hash": "fd98853aede071c437697842a3664589",
     "packages": [
         {
             "name": "nette/di",
-            "version": "v3.1.3",
+            "version": "v3.0.16",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/di.git",
-                "reference": "a58a11eb6c1acbeb878d36efa614b301c87fbb95"
+                "reference": "ecddce53e735744357f2cccdc5b1fdd298ef1522"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/di/zipball/a58a11eb6c1acbeb878d36efa614b301c87fbb95",
-                "reference": "a58a11eb6c1acbeb878d36efa614b301c87fbb95",
+                "url": "https://api.github.com/repos/nette/di/zipball/ecddce53e735744357f2cccdc5b1fdd298ef1522",
+                "reference": "ecddce53e735744357f2cccdc5b1fdd298ef1522",
                 "shasum": ""
             },
             "require": {
                 "ext-tokenizer": "*",
                 "nette/neon": "^3.3 || ^4.0",
                 "nette/php-generator": "^3.5.4 || ^4.0",
-                "nette/robot-loader": "^3.2 || ~4.0.0",
-                "nette/schema": "^1.2",
-                "nette/utils": "^3.2.5 || ~4.0.0",
-                "php": "7.2 - 8.3"
+                "nette/robot-loader": "^3.2",
+                "nette/schema": "^1.1",
+                "nette/utils": "^3.1.6",
+                "php": ">=7.1 <8.3"
+            },
+            "conflict": {
+                "nette/bootstrap": "<3.0"
             },
             "require-dev": {
-                "nette/tester": "^2.4",
-                "phpstan/phpstan": "^1.0",
-                "tracy/tracy": "^2.9"
+                "nette/tester": "^2.2",
+                "phpstan/phpstan": "^0.12",
+                "tracy/tracy": "^2.3"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.1-dev"
+                    "dev-master": "3.0-dev"
                 }
             },
             "autoload": {
@@ -74,9 +77,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nette/di/issues",
-                "source": "https://github.com/nette/di/tree/v3.1.3"
+                "source": "https://github.com/nette/di/tree/v3.0.16"
             },
-            "time": "2023-08-05T19:10:42+00:00"
+            "time": "2023-03-13T13:30:29+00:00"
         },
         {
             "name": "nette/finder",

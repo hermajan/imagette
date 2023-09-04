@@ -17,20 +17,26 @@ class WebpConverter extends Converter {
 		$this->type = Image::WEBP;
 	}
 	
-	public function convert(string $path, bool $replace = false): bool {
+	public function save(string $filename) {
 		try {
-			$options = [
-				"converters" => ["cwebp", "vips", "imagick", "gmagick", "imagemagick", "graphicsmagick", "gd"],
-				"metadata" => "all"
-			];
-			if($this->quality !== -1) {
-				$options["quality"] = $this->quality;
-			}
-			
-			Stack::convert($path, $path.".".$this->extension, $options);
-			return true;
-		} catch(ConversionFailedException $e) {
-			return parent::convert($path, $replace);
+			$this->saveStack($filename);
+		} catch(\Exception $e) {
+			parent::save($filename);
 		}
+	}
+	
+	/**
+	 * @throws ConversionFailedException
+	 */
+	protected function saveStack(string $filename) {
+		$options = [
+			"converters" => ["cwebp", "vips", "imagick", "gmagick", "imagemagick", "graphicsmagick", "gd"],
+			"metadata" => "all"
+		];
+		if($this->quality !== -1) {
+			$options["quality"] = $this->quality;
+		}
+		
+		Stack::convert($filename, $filename.".".$this->extension, $options);
 	}
 }

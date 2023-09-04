@@ -16,31 +16,31 @@ abstract class Converter {
 	 * @param string $path
 	 * @param bool $replace
 	 * @return bool True if image is converted, false otherwise.
-	 * @throws ImageException
 	 */
 	public function convert(string $path, bool $replace = false): bool {
-		$extension = pathinfo($path, PATHINFO_EXTENSION);
-		if($extension !== $this->extension) {
-			try {
-				$image = Image::fromFile($path);
-			} catch(UnknownImageFileException $e) {
+		if(file_exists($path)) {
+			if($this->extension !== pathinfo($path, PATHINFO_EXTENSION)) {
+				try {
+					if($replace === true) {
+						$this->save($path);
+					} else {
+						if(!file_exists($path.".".$this->extension)) {
+							$this->save($path);
+						} else {
+							return false;
+						}
+					}
+				} catch(\Exception $e) {
+					return false;
+				}
+			} else {
 				return false;
 			}
 			
-			if($replace === true) {
-				$this->save($image, $path);
-			} else {
-				if(!file_exists($path.".".$this->extension)) {
-					$this->save($image, $path);
-				} else {
-					return false;
-				}
-			}
-		} else {
-			return false;
+			return true;
 		}
 		
-		return true;
+		return false;
 	}
 	
 	/**
@@ -60,8 +60,10 @@ abstract class Converter {
 	
 	/**
 	 * @throws ImageException
+	 * @throws UnknownImageFileException
 	 */
-	public function save(Image $image, string $filename) {
+	public function save(string $filename) {
+		$image = Image::fromFile($filename);
 		$image->paletteToTrueColor();
 		$image->save($filename.".".$this->extension, $this->quality, $this->type);
 	}
