@@ -7,5 +7,6 @@ parameters:
 	checkGenericClassInNonGenericObjectType: false
 
 includes:
+	- %currentWorkingDirectory%/phpstan-baseline.neon
 	- %currentWorkingDirectory%/vendor/phpstan/phpstan-nette/extension.neon
 	- %currentWorkingDirectory%/vendor/phpstan/phpstan-nette/rules.neon

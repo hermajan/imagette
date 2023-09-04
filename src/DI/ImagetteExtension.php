@@ -6,6 +6,7 @@ use Imagette\Thumbnails\Parameters\{Template, Thumbnails};
 use Imagette\Thumbnails\Thumbnail;
 use Imagette\Thumbnails\ThumbnailMacro;
 use Nette\DI\CompilerExtension;
+use Nette\DI\Definitions\FactoryDefinition;
 use Nette\PhpGenerator\ClassType;
 use Nette\Schema\{Expect, Schema};
 
@@ -22,8 +23,9 @@ class ImagetteExtension extends CompilerExtension {
 		$builder = $this->getContainerBuilder();
 		
 		$builder->addDefinition($this->prefix("thumbnails"))
-			->setFactory(Thumbnail::class)->setArguments([$this->config->thumbnails]);
+			->setFactory(Thumbnail::class)->setArguments([$this->getConfig()->thumbnails]);
 		
+		/** @var FactoryDefinition $latteFactory */
 		$latteFactory = $builder->getDefinition("latte.latteFactory");
 		$latteFactory->getResultDefinition()->addSetup(ThumbnailMacro::class."::install(?->getCompiler())", ["@self"]);
 	}
