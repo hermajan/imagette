@@ -47,26 +47,21 @@ class Thumbnail {
 		return $result;
 	}
 	
+	/**
+	 * Generates images from thumbnail templates.
+	 * @return void
+	 */
 	public static function generate() {
 		$templates = self::$parameters["templates"];
 		foreach($templates as $key => $template) {
 			if(array_key_exists("path", $template)) {
-				$path = self::$parameters["base"].$template["path"];
-				$i = 0;
-				$files = Finder::findFiles("*")->in($path);
+				$files = Finder::findFiles("*")->in(self::$parameters["base"].$template["path"]);
 				/** @var \SplFileInfo $file */
 				foreach($files as $file) {
 					Debugger::dump($file->getRealPath());
-					$r = self::create($key, $file->getFilename(), $template["width"] ?? null, $template["height"] ?? null, $template["flags"] ?? [], $template["quality"] ?? null, self::$parameters["formats"] ?? []);
-//					Debugger::dump($r);
-//
-//					if($i > 5) {
-//						break;
-//					}
-//					$i++;
+					self::create($key, $file->getFilename(), $template["width"] ?? null, $template["height"] ?? null, $template["flags"] ?? [], $template["quality"] ?? null, self::$parameters["formats"] ?? []);
 				}
 			}
-//			break;
 		}
 	}
 	
