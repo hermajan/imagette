@@ -69,7 +69,7 @@ class Thumbnail {
 	 * Returns the path and filename of thumbnail of image
 	 */
 	public static function create(string $path, string $filename, ?int $width = null, ?int $height = null, array $flags = [], ?int $quality = null, array $formats = []): string {
-		if(!file_exists(self::$parameters["folder"]) and !mkdir(self::$parameters["folder"], 0755)) {
+		if(!file_exists(self::$parameters["folder"]) and !mkdir(self::$parameters["folder"], 0755, true)) {
 			throw new DirectoryNotFoundException("Path `".self::$parameters["folder"]."` does not exist!");
 		}
 		
@@ -121,9 +121,11 @@ class Thumbnail {
 		
 		$folder = self::$parameters["folder"];
 		$temp = "_".str_replace(DIRECTORY_SEPARATOR, "-", $template)."_";
-		if(strpos($template, DIRECTORY_SEPARATOR) !== false) {
+		
+		// $template does not have DIRECTORY_SEPARATOR. It means $template is a parameter from configuration.
+		if(strpos($template, DIRECTORY_SEPARATOR) === false) {
 			$directory = self::$parameters["folder"].$template.DIRECTORY_SEPARATOR;
-			if(is_dir($directory) or mkdir($directory, 0755)) {
+			if(is_dir($directory) or mkdir($directory, 0755, true)) {
 				$folder = $directory;
 				$temp = "_";
 			}
