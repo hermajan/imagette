@@ -25,11 +25,11 @@
 		]
 	},
 	"require": {
-		"php": ">=7.4",
+		"php": ">=7.4 <8.3",
 		"latte/latte": "^2.11",
-		"nette/di": "3.*",
-		"nette/finder": "2.*",
-		"nette/utils": "3.*",
+		"nette/di": "^3.0",
+		"nette/finder": "^2.5",
+		"nette/utils": "^3.2",
 		"rosell-dk/webp-convert": "^2.9"
 	},
 	"require-dev": {

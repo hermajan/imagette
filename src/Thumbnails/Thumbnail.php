@@ -115,13 +115,13 @@ class Thumbnail {
 			return $filename;
 		}
 		
-		if(!Picture::isValid($filename)) {
+		if(Picture::exists($filename) === false) {
 			return self::$parameters["fallback"];
 		}
 		
 		$folder = self::$parameters["folder"];
 		$temp = "_".str_replace(DIRECTORY_SEPARATOR, "-", $template)."_";
-		if(!str_contains($template, DIRECTORY_SEPARATOR)) {
+		if(strpos($template, DIRECTORY_SEPARATOR) !== false) {
 			$directory = self::$parameters["folder"].$template.DIRECTORY_SEPARATOR;
 			if(is_dir($directory) or mkdir($directory, 0755)) {
 				$folder = $directory;
