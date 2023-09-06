@@ -116,7 +116,6 @@ class Thumbnail {
 		}
 		
 		if(!Picture::isValid($filename)) {
-			Debugger::barDump($filename);
 			return self::$parameters["fallback"];
 		}
 		
