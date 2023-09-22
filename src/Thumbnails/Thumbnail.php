@@ -68,7 +68,7 @@ class Thumbnail {
 	/**
 	 * Returns the path and filename of thumbnail of image
 	 */
-	public static function create(string $path, string $filename, ?int $width = null, ?int $height = null, array $flags = [], ?int $quality = null, array $formats = []): string {
+	public static function create(string $path, ?string $filename = null, ?int $width = null, ?int $height = null, array $flags = [], ?int $quality = null, array $formats = []): string {
 		if(!file_exists(self::$parameters["folder"]) and !mkdir(self::$parameters["folder"], 0755, true)) {
 			throw new DirectoryNotFoundException("Path `".self::$parameters["folder"]."` does not exist!");
 		}
