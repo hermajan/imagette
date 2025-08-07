@@ -143,6 +143,11 @@ class Thumbnail {
 				}
 				$image->save($destination, $quality);
 			} catch(UnknownImageFileException|ImageException $e) {
+				// SVG is not supported for conversion by Nette\Image
+				if(pathinfo($filename, PATHINFO_EXTENSION) === "svg") {
+					return $filename;
+				}
+				
 				return self::$parameters["fallback"];
 			}
 		}
