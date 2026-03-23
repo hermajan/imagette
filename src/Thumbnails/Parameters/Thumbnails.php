@@ -5,18 +5,33 @@ namespace Imagette\Thumbnails\Parameters;
 use Nette\Utils\Image;
 
 class Thumbnails {
-	/** Base folder with images*/
-	public string $base;
+	/**
+	 * Base folder with images
+	 * @var string
+	 */
+	public $base;
 	
-	/** Path to folder with thumbnails */
-	public string $folder;
+	/**
+	 * Path to folder with thumbnails
+	 * @var string
+	 */
+	public $folder;
 	
-	/** Filename of fallback thumbnail image */
-	public string $fallback;
+	/**
+	 * Filename of fallback thumbnail image
+	 * @var string
+	 */
+	public $fallback;
 	
-	/** Flags for resizing */
-	public array $flags = [Image::SHRINK_ONLY];
+	/**
+	 * Flags for resizing
+	 * @var array
+	 */
+	public $flags = [Image::SHRINK_ONLY];
 	
-	/** Formats to which thumbnail also convert */
-	public array $formats = [];
+	/**
+	 * Formats to which thumbnail also convert
+	 * @var array
+	 */
+	public $formats = [];
 }

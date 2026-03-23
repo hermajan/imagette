@@ -15,8 +15,8 @@ class AvifConverter extends Converter {
 			throw new NotSupportedException("AVIF can be used from PHP 8.1!");
 		}
 		
-		$this->extension = "avif";
-		$this->quality = -1;
-		$this->type = Image::AVIF;
+//		$this->extension = "avif";
+//		$this->quality = -1;
+//		$this->type = Image::AVIF;
 	}
 }

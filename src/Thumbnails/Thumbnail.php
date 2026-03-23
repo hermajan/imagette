@@ -7,12 +7,14 @@ use Imagette\Picture;
 use Nette\DirectoryNotFoundException;
 use Nette\StaticClass;
 use Nette\Utils\{Finder, Image, ImageException, UnknownImageFileException};
+use Symfony\Component\Debug\Debug;
 use Tracy\Debugger;
 
 class Thumbnail {
 	use StaticClass;
 	
-	private static array $parameters = [];
+	/** @var array */
+	private static $parameters = [];
 	
 	public function __construct(array $parameters) {
 		self::$parameters = $parameters;
@@ -108,7 +110,7 @@ class Thumbnail {
 	}
 	
 	/**
-	 * Resizes image into thumbnail
+	 * Resizes image into a thumbnail
 	 */
 	protected static function resize(string $filename, string $template = "", ?int $width = null, ?int $height = null, int $flags = Image::FIT, ?int $quality = null): string {
 		if(file_exists($filename) and !isset($width) and !isset($height)) {
@@ -122,12 +124,17 @@ class Thumbnail {
 		$folder = self::$parameters["folder"];
 		$temp = "_".str_replace(DIRECTORY_SEPARATOR, "-", $template)."_";
 		
-		// $template does not have DIRECTORY_SEPARATOR. It means $template is a parameter from configuration.
+		// $template does not have DIRECTORY_SEPARATOR. It means $template is a parameter from the configuration.
 		if(strpos($template, DIRECTORY_SEPARATOR) === false) {
 			$directory = self::$parameters["folder"].$template.DIRECTORY_SEPARATOR;
 			if(is_dir($directory) or mkdir($directory, 0755, true)) {
 				$folder = $directory;
 				$temp = "_";
+			}
+		} else {
+			$folder .= basename(dirname($filename)).DIRECTORY_SEPARATOR;
+			if(!is_dir($folder)) {
+				mkdir($folder, 0755, true);
 			}
 		}
 		
@@ -169,11 +176,11 @@ class Thumbnail {
 			}
 			
 			switch($type) {
-				case "avif":
-				case Image::AVIF:
-					$avifConverter = new AvifConverter();
-					$avifConverter->convert($filename, false);
-					break;
+//				case "avif":
+//				case Image::AVIF:
+//					$avifConverter = new AvifConverter();
+//					$avifConverter->convert($filename, false);
+//					break;
 				case "webp":
 				case Image::WEBP:
 					$webpConverter = new WebpConverter();

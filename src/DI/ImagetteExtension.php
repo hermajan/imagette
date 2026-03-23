@@ -2,35 +2,36 @@
 
 namespace Imagette\DI;
 
-use Imagette\Thumbnails\Parameters\{Template, Thumbnails};
 use Imagette\Thumbnails\Thumbnail;
 use Imagette\Thumbnails\ThumbnailMacro;
 use Nette\DI\CompilerExtension;
-use Nette\DI\Definitions\FactoryDefinition;
 use Nette\PhpGenerator\ClassType;
-use Nette\Schema\{Expect, Schema};
 
 class ImagetteExtension extends CompilerExtension {
-	public function getConfigSchema(): Schema {
-		return Expect::structure([
-			"thumbnails" => Expect::from(new Thumbnails, [
-				"templates" => Expect::arrayOf(Expect::from(new Template)->castTo("array"))
-			])->castTo("array")
-		]);
-	}
-	
-	public function loadConfiguration(): void {
+	public $defaults = [
+		"thumbnails" => [
+			"base" => null,
+			"folder" => null,
+			"fallback" => null,
+			"flags" => ["Nette\Utils\Image::SHRINK_ONLY"],
+			"formats" => [],
+			"templates" => [],
+		]
+	];
+
+	public function loadConfiguration() {
+		$config = $this->validateConfig($this->defaults);
 		$builder = $this->getContainerBuilder();
 		
 		$builder->addDefinition($this->prefix("thumbnails"))
-			->setFactory(Thumbnail::class)->setArguments([$this->getConfig()->thumbnails]);
+			->setFactory(Thumbnail::class, [$config["thumbnails"]]);
 		
-		/** @var FactoryDefinition $latteFactory */
 		$latteFactory = $builder->getDefinition("latte.latteFactory");
-		$latteFactory->getResultDefinition()->addSetup(ThumbnailMacro::class."::install(?->getCompiler())", ["@self"]);
+		$latteFactory->addSetup(ThumbnailMacro::class."::install(?->getCompiler())", ["@self"]);
 	}
 	
 	public function afterCompile(ClassType $class) {
-		$this->initialization->addBody('$this->getService(?);', [$this->prefix("thumbnails")]);
+		$initialize = $class->getMethod("initialize");
+		$initialize->addBody('$this->getService(?);', [$this->prefix("thumbnails")]);
 	}
 }

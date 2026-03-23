@@ -3,18 +3,33 @@
 namespace Imagette\Thumbnails\Parameters;
 
 class Template {
-	/** Path of folder with images */
-	public string $path;
+	/**
+	 * Path of folder with images
+	 * @var string
+	 */
+	public $path;
 	
-	/** Width of thumbnail */
-	public ?int $width = null;
+	/**
+	 * Width of thumbnail
+	 * @var int|null
+	 */
+	public $width = null;
 	
-	/** Height of thumbnail */
-	public ?int $height = null;
+	/**
+	 * Height of thumbnail
+	 * @var int|null
+	 */
+	public $height = null;
 	
-	/** Flags for resizing */
-	public array $flags = [];
+	/**
+	 * Flags for resizing
+	 * @var array
+	 */
+	public $flags = [];
 	
-	/** Quality of thumbnail */
-	public ?int $quality = null;
+	/**
+	 * Quality of thumbnail
+	 * @var int|null
+	 */
+	public $quality = null;
 }

@@ -5,11 +5,14 @@ namespace Imagette\Converters;
 use Nette\Utils\{Finder, Image, ImageException, UnknownImageFileException};
 
 abstract class Converter {
-	protected string $extension = "";
+	/** @var string */
+	protected $extension = "";
 	
-	protected int $quality = -1;
+	/** @var int */
+	protected $quality = -1;
 	
-	protected int $type;
+	/** @var int */
+	protected $type;
 	
 	/**
 	 * Converts image to some format.
