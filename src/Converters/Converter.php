@@ -15,7 +15,7 @@ abstract class Converter {
 	 * Converts image to some format.
 	 * @param string $path
 	 * @param bool $replace
-	 * @return bool True if image is converted, false otherwise.
+	 * @return bool True if the image is converted, false otherwise.
 	 */
 	public function convert(string $path, bool $replace = false): bool {
 		if(file_exists($path)) {
@@ -46,7 +46,7 @@ abstract class Converter {
 	/**
 	 * Converts folder with images to some format.
 	 * @param string $path Path to file.
-	 * @param bool $replace True if converted file should be replaced, false otherwise.
+	 * @param bool $replace True if a converted file should be replaced, false otherwise.
 	 * @param array $masks Masks where search for files. See <https://doc.nette.org/en/utils/finder#toc-wildcards>.
 	 * @throws ImageException
 	 */
@@ -59,6 +59,8 @@ abstract class Converter {
 	}
 	
 	/**
+	 * Saves the modified image to a specified file.
+	 * @param string $filename The name of the file where the image will be saved.
 	 * @throws ImageException
 	 * @throws UnknownImageFileException
 	 */

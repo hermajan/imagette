@@ -17,6 +17,6 @@ class Thumbnails {
 	/** Flags for resizing */
 	public array $flags = [Image::SHRINK_ONLY];
 	
-	/** Formats to which thumbnail also convert */
+	/** Formats to which thumbnail also converts */
 	public array $formats = [];
 }

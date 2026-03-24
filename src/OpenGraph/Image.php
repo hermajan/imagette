@@ -5,6 +5,15 @@ namespace Imagette\OpenGraph;
 use Nette\Utils\{Image as NetteImage, ImageException, UnknownImageFileException};
 
 class Image {
+	/**
+	 * Converts an image to a specific format or size and saves it to the destination.
+	 * If the source file does not exist, the fallback image is used.
+	 *
+	 * @param string $source The file path of the source image.
+	 * @param string $destination The file path where the converted image will be saved.
+	 * @param string $fallback The file path of the fallback image if the source is not available or an error occurs.
+	 * @return string Returns the file path of the saved image, or the fallback path if an error occurs.
+	 */
 	public function convert(string $source, string $destination, string $fallback): string {
 		if(!file_exists($destination)) {
 			try {
