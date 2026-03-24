@@ -1,6 +1,2 @@
 parameters:
 	ignoreErrors:
-		-
-			message: "#^Cannot access property \\$thumbnails on array\\|object\\.$#"
-			count: 1
-			path: src/DI/ImagetteExtension.php
