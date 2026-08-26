@@ -2,7 +2,7 @@
 [![Tests](https://github.com/hermajan/imagette/workflows/Tests/badge.svg)](https://github.com/hermajan/imagette/actions?query=workflow%3ATests)
 [![Packagist](https://img.shields.io/packagist/v/hermajan/imagette.svg)](https://packagist.org/packages/hermajan/imagette)
 
-<p id="readme-perex">Handling of images with [Nette Image](https://doc.nette.org/en/utils/images).</p>
+<p id="readme-perex">Handling of images with <a href="https://doc.nette.org/en/utils/images">Nette Image</a>.</p>
 
 ## 🌟 Features
 - **Thumbnail Generation**: Intelligent image resizing, caching, and template-based generation.
